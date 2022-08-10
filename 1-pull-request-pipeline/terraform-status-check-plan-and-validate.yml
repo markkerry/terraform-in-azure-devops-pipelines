@@ -1,0 +1,28 @@
+# Variable Group 'mk-msdn-tf-azdo' was defined in the Variables tab
+jobs:
+- job: Job_1
+  displayName: terraform plan
+  pool:
+    vmImage: ubuntu-18.04
+  steps:
+  - checkout: self
+  - task: TerraformInstaller@0
+    displayName: Install Terraform 1.2.6
+    inputs:
+      terraformVersion: 1.2.6
+  - task: CmdLine@2
+    displayName: terraform init
+    inputs:
+      script: >
+        terraform init -backend-config="access_key=$(STG-key-1)"
+      workingDirectory: terraform
+  - task: CmdLine@2
+    displayName: terraform validate
+    inputs:
+      script: terraform validate
+      workingDirectory: terraform
+  - task: CmdLine@2
+    displayName: terraform plan
+    inputs:
+      script: terraform plan -input=false -var="spn-client-id=$(SPN-Application-client-ID)" -var="spn-client-secret=$(SPN-Secret)" -var="spn-tenant-id=$(SPN-Tenant-ID)"
+      workingDirectory: terraform
